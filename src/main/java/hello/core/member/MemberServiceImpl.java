@@ -1,5 +1,7 @@
 package hello.core.member;
 
+import org.springframework.stereotype.Component;
+
 /*
  * 회원 서비스
  *
@@ -8,7 +10,7 @@ package hello.core.member;
  * 하지만 아직 구현체를 직접 생성하므로 DIP 위반
  *
  * */
-
+@Component
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
 

@@ -91,7 +91,7 @@ Q3. 그럼 Config는 언제 만드나? 스프링은 뭘 대신 해주나?
 
 느낀 점
 
-"DI를 안 지켰다"가 아니라 "스프링이 대신 지켜주고 있어서 몰랐다"였다.
+DI를 안 지킨게 아니라 스프링이 대신 지켜주고 있던 것이였다.
 
 ----------------------------------------------------------------------------------------
 4강 – 스프링으로 전환하기
@@ -148,3 +148,43 @@ Q2. 실무 ServiceImpl에 List<Order> tempList = new ArrayList<>();가 많았는
 메서드 안 → 지역변수 → 호출마다 새로 만들어짐 → 안전 (내가 본 대부분이 이 경우)
 클래스 바로 아래 → 필드 → 앱 전체에 하나 → 요청끼리 섞이거나 계속 쌓임
 이런 버그는 로컬에선 멀쩡하고 운영 동시 요청에서만 터졌을 것.
+
+----------------------------------------------------------------------------------------
+2026-11-03
+----------------------------------------------------------------------------------------
+
+6강 – 컴포넌트 스캔과 의존관계 주입 방법
+
+요약
+
+@ComponentScan이 @Component가 붙은 클래스를 찾아 자동으로 빈 등록한다. 빈 이름은 클래스명 첫 글자 소문자.
+의존관계는 생성자에 @Autowired를 붙여 자동 주입한다. 생성자가 하나면 @Autowired도 생략 가능.
+AutoAppConfig는 기존 AppConfig가 같이 스캔되지 않도록 excludeFilters로 @Configuration을 제외했다.
+@SpringBootApplication 안에 @ComponentScan이 들어 있다. 그래서 스프링 부트에서는 따로 스캔 설정을 안 했던 것.
+주입 방법: 생성자 / 수정자(setter) / 필드 / 일반 메서드 → 생성자 주입 + final + @RequiredArgsConstructor가 실무 표준
+
+질문
+
+Q1. CoreApplicationTests는 왜 통과하나? 무엇이 겹쳤나?
+
+@Configuration도 내부에 @Component를 포함한다 → @SpringBootApplication의 스캔에 AppConfig까지 잡힌다.
+그래서 같은 MemoryMemberRepository가 두 경로로 등록됐다.
+등록한 곳	                            빈 이름
+AppConfig의 @Bean memberRepository()	memberRepository
+@Component MemoryMemberRepository	    memoryMemberRepository
+빈이 2개 있다는 것만으로는 오류가 안 난다. 주입할 때 하나를 못 고르면 오류가 난다.
+MemberServiceImpl(MemberRepository memberRepository) → 타입으로 2개 → 파라미터 이름 memberRepository와 같은 빈을 선택 → 통과
+파라미터 이름 매칭은 컴파일 옵션 -parameters가 있어야 동작한다. (자바는 기본적으로 파라미터 이름을 지움)
+contextLoads()는 모든 빈이 만들어지고 주입된 것까지만 확인한다. 2개인지 보려면 getBeansOfType으로 직접 확인해야 한다.
+
+Q2. 그럼 @Component가 @Bean보다 우선인가?
+
+아니다. 이번엔 이름이 맞아서 오히려 @Bean 쪽이 선택됐다. 주입할 때는 등록 방식이 아니라 타입과 이름만 본다.
+수동/자동 우선순위는 빈 이름까지 같을 때 이야기다.
+순수 스프링: 수동(@Bean)이 덮어씀
+스프링 부트: 기본적으로 오류 (의도치 않은 덮어쓰기 방지)
+
+느낀 점
+
+저장소는 앱 전체에서 하나를 같이 써야 하고(싱글톤), 
+서비스는 그 하나를 생성자로 받아 끝까지 바꾸지 않는다(생성자 주입 + final).
