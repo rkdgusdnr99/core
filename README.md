@@ -188,3 +188,23 @@ Q2. 그럼 @Component가 @Bean보다 우선인가?
 
 저장소는 앱 전체에서 하나를 같이 써야 하고(싱글톤), 
 서비스는 그 하나를 생성자로 받아 끝까지 바꾸지 않는다(생성자 주입 + final).
+
+----------------------------------------------------------------------------------------
+
+7강 – 같은 타입 빈이 여러 개일 때
+
+요약
+
+FixDiscountPolicy에도 @Component를 붙이자 DiscountPolicy 타입 빈이 2개가 되어 NoUniqueBeanDefinitionException이 났다.
+@Autowired가 빈을 고르는 순서
+1. 타입으로 찾기
+2. 여러 개면 @Qualifier 확인
+3. 없으면 @Primary 확인
+4. 그래도 없으면 파라미터(필드) 이름과 같은 빈 선택 (6강 CoreApplicationTests가 통과한 이유)
+
+개념
+@Primary: "기본값은 나" → 자주 쓰는 빈에 붙인다.
+@Qualifier("이름"): "여기서는 정확히 이것" → 필요한 곳에서만 지정한다.
+둘이 겹치면 더 구체적으로 지정한 @Qualifier가 우선
+@RequiredArgsConstructor 대신 생성자 사용 이유: Lombok이 만드는 생성자에는 파라미터 애노테이션(@Qualifier)를 붙힐 수 없음
+
