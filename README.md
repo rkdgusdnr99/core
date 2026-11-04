@@ -232,3 +232,15 @@ InitializingBean, DisposableBean 인터페이스: 스프링 전용 인터페이�
 - 싱글톤 빈이 프로토타입을 생성자로 주입받으면 주입이 한 번뿐이라 계속 같은 객체를 쓴다.
 - ObjectProvider.getObject(): 필요할 때마다 컨테이너에서 꺼내서 해결, 선택적 의존관계(getIfAvailable)나 지연 조회에도 쓴다.
 
+----------------------------------------------------------------------------------------
+
+10강 – request 스코프와 프록시
+
+요약
+- request 스코프: HTTP 요청 하나당 빈 하나. 요청별 로그 ID(uuid)를 붙이는 MyLogger로 실습
+- 문제: 싱글톤(컨트롤러·서비스)은 앱 시작 때 주입받는데, 그때는 요청이 없어서 request 빈을 줄 수 없다 → 앱 시작 오류
+- 해결 1: ObjectProvider로 통로만 받고, 요청 중에 getObject()로 꺼낸다
+- 해결 2: proxyMode = ScopedProxyMode.TARGET_CLASS
+    - 앱 시작 때 MyLogger를 상속한 가짜(CGLIB 프록시)를 주입
+    - 메서드 호출 시 프록시가 현재 요청의 진짜 MyLogger를 찾아 위임
+    - 비유: 대표번호 하나만 저장해두면 그때그때 담당 상담원에게 연결
