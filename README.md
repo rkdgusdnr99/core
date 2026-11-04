@@ -223,4 +223,12 @@ InitializingBean, DisposableBean 인터페이스: 스프링 전용 인터페이�
 @Bean(initMethod = "init", destroyMethod = "close"): 코드를 고칠 수 없는 외부 라이브러리에 사용. destroyMethod는 기본값이 추론이라 close, shutdown을 알아서 호출한다.
 @PostConstruct, @PreDestroy: 기본으로 쓰는 방법. jakarta.annotation 패키지.
 
+----------------------------------------------------------------------------------------
+
+9강 – 빈 스코프
+
+요약
+- 싱글톤(기본): 앱 시작 시 하나 / 프로토타입: 조회마다 새로 생성, 생성·주입·초기화까지만 관리 (`@PreDestroy` 호출 안 됨)
+- 싱글톤 빈이 프로토타입을 생성자로 주입받으면 주입이 한 번뿐이라 계속 같은 객체를 쓴다.
+- ObjectProvider.getObject(): 필요할 때마다 컨테이너에서 꺼내서 해결, 선택적 의존관계(getIfAvailable)나 지연 조회에도 쓴다.
 
