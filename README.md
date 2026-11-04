@@ -208,3 +208,19 @@ FixDiscountPolicy에도 @Component를 붙이자 DiscountPolicy 타입 빈이 2�
 둘이 겹치면 더 구체적으로 지정한 @Qualifier가 우선
 @RequiredArgsConstructor 대신 생성자 사용 이유: Lombok이 만드는 생성자에는 파라미터 애노테이션(@Qualifier)를 붙힐 수 없음
 
+----------------------------------------------------------------------------------------
+2026-11-04
+----------------------------------------------------------------------------------------
+
+8강 – 빈 생명주기 콜백
+
+요약
+
+스프링 빈의 흐름: 컨테이너 생성 → 빈 생성 → 의존관계 주입 → 초기화 콜백 → 사용 → 소멸 전 콜백 → 컨테이너 종료
+생성자 시점에는 아직 setter나 필드 주입이 끝나지 않았을 수 있다. 그래서 "주입이 다 끝난 뒤"에 실행할 지점이 따로 필요하다.
+콜백 방법 3가지 (NetworkClient로 연결/종료 실습)
+InitializingBean, DisposableBean 인터페이스: 스프링 전용 인터페이스에 의존, 메서드 이름 변경 불가 → 지금은 거의 안 씀
+@Bean(initMethod = "init", destroyMethod = "close"): 코드를 고칠 수 없는 외부 라이브러리에 사용. destroyMethod는 기본값이 추론이라 close, shutdown을 알아서 호출한다.
+@PostConstruct, @PreDestroy: 기본으로 쓰는 방법. jakarta.annotation 패키지.
+
+
